@@ -90,22 +90,22 @@ const MediaScrubber: React.FC<MediaScrubberProps> = ({ mediaRef, isActive, onSee
   const rangeWidth = rangeRight - rangeLeft;
 
   return (
-    <div className="absolute bottom-0 inset-x-0 h-10 bg-black/95 backdrop-blur-xl flex items-center px-4 gap-2 z-[100] border-t border-white/5 group/scrubber select-none">
+    <div className="absolute bottom-0 inset-x-0 h-8 bg-black/80 backdrop-blur-sm flex items-center px-3 gap-2 z-[100] border-t border-white/5 group/scrubber select-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
       <div className="flex gap-1 shrink-0">
-        <button onClick={() => onUpdateSettings({ markIn: time })} className="w-7 h-7 bg-white/5 hover:bg-white/10 border border-white/10 rounded-sm text-[12px] font-black text-blue-400 flex items-center justify-center transition-all">&#123;</button>
-        <button onClick={() => onUpdateSettings({ markOut: time })} className="w-7 h-7 bg-white/5 hover:bg-white/10 border border-white/10 rounded-sm text-[12px] font-black text-red-400 flex items-center justify-center transition-all">&#125;</button>
+        <button onClick={() => onUpdateSettings({ markIn: time })} className="w-5 h-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-sm text-[10px] font-black text-blue-400 flex items-center justify-center transition-all">&#123;</button>
+        <button onClick={() => onUpdateSettings({ markOut: time })} className="w-5 h-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-sm text-[10px] font-black text-red-400 flex items-center justify-center transition-all">&#125;</button>
       </div>
-      <div className="min-w-[60px]">
-        <span className={`text-[11px] font-mono font-black ${themeColor === 'red' ? 'text-red-400' : 'text-emerald-400'} tabular-nums tracking-tighter`}>{formatTime(time)}</span>
+      <div className="min-w-[50px]">
+        <span className={`text-[10px] font-mono font-black ${themeColor === 'red' ? 'text-red-400' : 'text-emerald-400'} tabular-nums tracking-tighter`}>{formatTime(time)}</span>
       </div>
-      <div className="flex-1 relative h-3 bg-white/5 rounded-sm overflow-hidden group">
+      <div className="flex-1 relative h-2 bg-white/10 rounded-full overflow-hidden group/track cursor-pointer">
         {(markIn !== undefined || markOut !== undefined) && (
-          <div className="absolute inset-y-0 bg-blue-500/20 border-x border-blue-500/40 z-0" style={{ left: `${rangeLeft}%`, width: `${rangeWidth}%` }}></div>
+          <div className="absolute inset-y-0 bg-blue-500/30 border-x border-blue-500/50 z-0" style={{ left: `${rangeLeft}%`, width: `${rangeWidth}%` }}></div>
         )}
         <div className={`absolute inset-y-0 left-0 transition-all duration-75 bg-blue-600 shadow-[0_0_8px_#2563eb] z-10`} style={{ width: `${(time / duration) * 100}%` }}></div>
-        <input type="range" min="0" max={duration} step="0.01" value={time} onMouseDown={() => setIsDragging(true)} onMouseUp={() => setIsDragging(false)} onChange={(e) => { const nt = parseFloat(e.target.value); setTime(nt); onSeek(nt); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
+        <input type="range" min="0" max={duration} step="0.01" value={time} onMouseDown={() => setIsDragging(true)} onMouseUp={() => setIsDragging(false)} onChange={(e) => { const nt = parseFloat(e.target.value); setTime(nt); onSeek(nt); }} className="absolute inset-0 w-full h-full opacity-0 z-20" />
       </div>
-      <div className="min-w-[60px] text-right text-[11px] font-mono font-bold text-slate-500 tracking-tighter tabular-nums">-{formatTime(duration - time)}</div>
+      <div className="min-w-[50px] text-right text-[10px] font-mono font-bold text-slate-500 tracking-tighter tabular-nums">-{formatTime(duration - time)}</div>
     </div>
   );
 };
@@ -136,7 +136,6 @@ const MainMixer: React.FC<MainMixerProps> = ({
 }) => {
   const previewRef = useRef<HTMLVideoElement>(null);
   const programRef = useRef<HTMLVideoElement>(null);
-  // Prepare Refs for up to 6 layers
   const layerRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const [showPreviewSafeZones, setShowPreviewSafeZones] = useState(false);
@@ -209,33 +208,40 @@ const MainMixer: React.FC<MainMixerProps> = ({
       };
 
       const textLength = source.bibleText?.length || 0;
-      const fontSize = textLength > 300 ? '1.2rem' : textLength > 100 ? '1.6rem' : '2.2rem';
+      // Maximized preview font sizes using REM to fit the smaller container
+      const fontSize = textLength > 1000 ? '0.9rem' :
+                       textLength > 600 ? '1.1rem' :
+                       textLength > 400 ? '1.3rem' :
+                       textLength > 200 ? '1.6rem' : 
+                       textLength > 100 ? '2.0rem' : '2.8rem';
       
       const isLT = theme.category === 'lowerthird';
 
       return (
-        <div className={`w-full h-full relative overflow-hidden transition-all duration-700 flex flex-col ${isLT ? 'justify-end pb-12' : 'items-center justify-center'}`} style={{ background: isLT ? 'transparent' : theme.background, color: theme.textColor, fontFamily: theme.fontFamily }}>
+        <div className={`w-full h-full relative overflow-hidden transition-all duration-700 flex flex-col ${isLT ? 'justify-end pb-[5%]' : 'items-center justify-center'}`} style={{ background: isLT ? 'transparent' : theme.background, color: theme.textColor, fontFamily: theme.fontFamily }}>
           {!isLT && theme.motionEffect !== 'none' && (
              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
                 <div className={`motion-layer motion-${theme.motionEffect}`}></div>
              </div>
           )}
           
-          <div className={`transition-all duration-700 ${isLT ? 'w-[80%] mx-auto bg-black/80 border-l-8 border-blue-500 p-6 shadow-2xl animate-in slide-in-from-left' : 'w-full h-full flex flex-col items-center justify-center px-[10%] text-center'}`} style={{ borderColor: theme.accentColor }}>
-            <div className={`${isLT ? 'mb-1' : 'mb-6 shrink-0'}`}>
-               <h2 className={`${isLT ? 'text-[0.9rem]' : 'text-[1rem]'} font-serif uppercase tracking-[0.25em] drop-shadow-md`} style={{ color: theme.accentColor }}>
+          <div className={`transition-all duration-700 ${isLT ? 'w-[90%] mx-auto bg-black/80 border-l-8 border-blue-500 p-6 shadow-2xl animate-in slide-in-from-left' : 'w-full h-full flex flex-col items-center justify-center px-[5%] py-[4%] text-center'}`} style={{ borderColor: theme.accentColor }}>
+            <div className={`${isLT ? 'mb-1' : 'mb-2 shrink-0'}`}>
+               <h2 className={`${isLT ? 'text-[0.9rem]' : 'text-[1.2rem]'} font-serif uppercase tracking-[0.25em] drop-shadow-md`} style={{ color: theme.accentColor }}>
                  {source.bibleRef}
                </h2>
-               {!isLT && <div className="w-12 h-[1px] bg-white/20 mt-4 mx-auto"></div>}
+               {!isLT && <div className="w-16 h-[2px] bg-white/20 mt-2 mx-auto shadow-sm"></div>}
             </div>
 
-            <p className="font-serif italic leading-relaxed transition-all duration-300 drop-shadow-lg" style={{ fontSize: isLT ? '1.2rem' : fontSize }}>
-              "{source.bibleText}"
-            </p>
+            <div className="flex-1 flex items-center justify-center overflow-hidden w-full">
+              <p className="font-serif italic leading-relaxed transition-all duration-300 drop-shadow-lg" style={{ fontSize: isLT ? '1.2rem' : fontSize }}>
+                "{source.bibleText}"
+              </p>
+            </div>
 
             {source.biblePart && !isLT && (
-              <div className="absolute bottom-[6%] inset-x-0 flex justify-center">
-                 <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.4em]">{source.biblePart}</span>
+              <div className="absolute bottom-[2%] inset-x-0 flex justify-center">
+                 <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">{source.biblePart}</span>
               </div>
             )}
           </div>
@@ -267,29 +273,28 @@ const MainMixer: React.FC<MainMixerProps> = ({
       
       {/* PREVIEW COLUMN */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header - Outside and Above the Window */}
-        <div className={`h-7 flex items-center justify-between px-3 rounded-t-sm mb-0.5 ${previewSource ? 'bg-emerald-800' : 'bg-[#1e293b]'}`}>
+        {/* Header - Completely separate div above content */}
+        <div className={`h-7 flex items-center justify-between px-3 rounded-t-sm mb-1 ${previewSource ? 'bg-emerald-800' : 'bg-[#1e293b]'}`}>
            <span className="text-[10px] font-black text-white uppercase tracking-wider truncate mr-2">{previewSource?.name || 'PREVIEW'}</span>
            <button onClick={() => setShowPreviewSafeZones(!showPreviewSafeZones)} className={`h-4 px-2 rounded-sm text-[8px] font-black uppercase tracking-widest border transition-all ${showPreviewSafeZones ? 'bg-blue-600 text-white border-blue-500' : 'bg-black/30 text-slate-400 border-white/10'}`}>Safe</button>
         </div>
         
-        {/* Window Content - Separated by Border */}
-        <div className={`flex-1 relative border-2 bg-black flex flex-col items-center justify-center overflow-hidden group ${previewSource ? 'border-emerald-600' : 'border-[#1e293b]'}`}>
-           {/* Inner container to ensure aspect ratio fitting without crop */}
-           <div className="w-full h-full flex items-center justify-center p-1 relative pb-10">
-              <div className="aspect-video w-full max-w-full max-h-full relative shadow-2xl bg-black">
+        {/* Video Content Container */}
+        <div className={`flex-1 relative border-2 bg-black flex flex-col items-center justify-center overflow-hidden group rounded-b-sm ${previewSource ? 'border-emerald-600' : 'border-[#1e293b]'}`}>
+           {/* Inner wrapper - removed padding bottom to eliminate black bar */}
+           <div className="w-full h-full flex items-center justify-center p-0 relative">
+              <div className="aspect-video w-full max-w-full max-h-full relative shadow-2xl bg-black overflow-hidden flex items-center justify-center">
                  {renderContent(previewSource, previewRef)}
                  <SafeZonesOverlay visible={showPreviewSafeZones} />
               </div>
            </div>
-           {/* Scrubber overlay at bottom of the window box */}
+           {/* Scrubber - now overlay on top */}
            {previewSource && <MediaScrubber source={previewSource} mediaRef={previewRef} themeColor="green" isActive={!!previewSource && (previewSource.type === 'video' || previewSource.type === 'audio')} onSeek={(t) => onSeek(previewSource.id, t)} onUpdateSettings={(u) => onUpdateSourceSettings(previewSource.id, u)} />}
         </div>
       </div>
 
-      {/* CENTER CONTROLS */}
-      {/* Padded at top to align with the window content (skipping the header height) */}
-      <div className="flex gap-1 shrink-0 h-full pt-[30px] z-[100]">
+      {/* CENTER CONTROLS - Aligned to account for header offset */}
+      <div className="flex gap-1 shrink-0 h-full pt-[32px] z-[100]">
         <div className="w-[80px] flex flex-col bg-[#0f172a] border-y border-l border-black/60 p-0.5 gap-0.5 shrink-0 relative overflow-hidden">
           <button onClick={onSwap} className="w-full bg-[#f36c21] h-7 rounded-sm text-[9px] font-black text-white uppercase shadow-lg active:scale-95 shrink-0">⇄ SWAP</button>
           
@@ -316,16 +321,17 @@ const MainMixer: React.FC<MainMixerProps> = ({
 
       {/* PROGRAM COLUMN */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header - Outside and Above the Window */}
-        <div className={`h-7 flex items-center justify-between px-3 rounded-t-sm mb-0.5 ${programSource ? 'bg-red-800' : 'bg-[#1e293b]'}`}>
+        {/* Header - Completely separate div */}
+        <div className={`h-7 flex items-center justify-between px-3 rounded-t-sm mb-1 ${programSource ? 'bg-red-800' : 'bg-[#1e293b]'}`}>
            <span className="text-[10px] font-black text-white uppercase tracking-wider truncate mr-2">{programSource?.name || 'PROGRAM'}</span>
            <button onClick={() => setShowProgramSafeZones(!showProgramSafeZones)} className={`h-4 px-2 rounded-sm text-[8px] font-black uppercase tracking-widest border transition-all ${showProgramSafeZones ? 'bg-blue-600 text-white border-blue-500' : 'bg-black/30 text-slate-400 border-white/10'}`}>Safe</button>
         </div>
         
-        {/* Window Content - Separated by Border */}
-        <div className={`flex-1 relative border-2 bg-black flex flex-col items-center justify-center overflow-hidden group ${programSource ? 'border-red-600' : 'border-[#1e293b]'}`}>
-           <div className="w-full h-full flex items-center justify-center p-1 relative pb-10">
-              <div className="aspect-video w-full max-w-full max-h-full relative shadow-2xl bg-black">
+        {/* Video Content Container */}
+        <div className={`flex-1 relative border-2 bg-black flex flex-col items-center justify-center overflow-hidden group rounded-b-sm ${programSource ? 'border-red-600' : 'border-[#1e293b]'}`}>
+           {/* Inner wrapper - removed padding bottom to eliminate black bar */}
+           <div className="w-full h-full flex items-center justify-center p-0 relative">
+              <div className="aspect-video w-full max-w-full max-h-full relative shadow-2xl bg-black overflow-hidden flex items-center justify-center">
                  {/* Layer 0: Main Program */}
                  {renderContent(programSource, programRef, false)}
                  
@@ -333,7 +339,7 @@ const MainMixer: React.FC<MainMixerProps> = ({
                  {layerSources.map((layerSource, idx) => {
                     if (!layerSource) return null;
                     return (
-                      <div key={idx} className="absolute inset-0 z-10 pointer-events-none">
+                      <div key={idx} className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
                          {renderContent(layerSource, (el: HTMLVideoElement) => { 
                              if(layerRefs.current) layerRefs.current[idx] = el; 
                              if(el && layerSource) applySource(el, layerSource, true, true);

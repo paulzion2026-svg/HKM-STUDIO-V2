@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { BibleTheme, MotionEffect } from '../types';
 
@@ -75,7 +76,7 @@ const ScriptureOptionsModal: React.FC<ScriptureOptionsModalProps> = ({ isOpen, o
   const [themeCategory, setThemeCategory] = useState<'full' | 'lowerthird'>('full');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
-  const [maxWords, setMaxWords] = useState(40);
+  const [maxWords, setMaxWords] = useState(1000);
 
   useEffect(() => {
     const saved = localStorage.getItem('hkm_settings');
@@ -257,7 +258,7 @@ const ScriptureOptionsModal: React.FC<ScriptureOptionsModalProps> = ({ isOpen, o
                            <span className="bg-blue-100 px-3 py-1 rounded text-[11px] font-black text-blue-700">{maxWords} Words</span>
                         </div>
                         <input 
-                          type="range" min="10" max="150" step="5" value={maxWords} 
+                          type="range" min="10" max="1000" step="10" value={maxWords} 
                           onChange={(e) => handleMaxWordsChange(parseInt(e.target.value))}
                           className="w-full accent-blue-600" 
                         />

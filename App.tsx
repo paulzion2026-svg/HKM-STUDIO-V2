@@ -90,11 +90,39 @@ const App: React.FC = () => {
   });
 
   const [layerAssignments, setLayerAssignments] = useState<Record<number, string | null>>({ 1: null, 2: null, 3: null, 4: null, 5: null, 6: null });
+  
   const [settings, setSettings] = useState<AppSettings>(() => {
+    const defaultSettings: AppSettings = { 
+      theme: 'Church Blue', 
+      previewColor: '#10b981', 
+      outputColor: '#ef4444', 
+      masterFrameRate: 'PAL 25p', 
+      outputSize: '1280x720', 
+      aspectRatio: 'Widescreen', 
+      performanceMode: false, 
+      gpuAcceleration: true,
+      maxWordsPerSlide: 1000, // Explicit default
+      language: 'English', inputSize: '208x156', fullscreen1Display: '2', fullscreen2Display: 'None',
+      hideCursor: false, onTop: false, minimize: false, startAdvancedMode: false, startFullscreen: false, startMaximized: false,
+      displayConfirmationRecord: true, displayConfirmationInputClose: false, autoPlayOutputTransition: true, autoPausePreviewTransition: true,
+      quickPlayTransition: 'Fade', quickPlayDuration: 500, ftbDuration: 500, graphicsAdapter: '', lowLatencyCapture: false, highInputPerformance: false,
+      showPreviewThumbnails: true, disableWindowsUpdate: false, showGpuCpuAlerts: false, displayMethod: 'Auto',
+      preferredDeinterlacingCamera: 'Blend', preferredDeinterlacingPlayback: 'Blend', ffmpegFileTypes: '',
+      mpeg2VideoDecoder: 'Auto', mpegAudioDecoder: 'Auto', x264VideoDecoder: 'Auto', useVmixDeinterlacing: false
+    };
+
     try {
       const saved = localStorage.getItem('hkm_settings');
-      return saved ? JSON.parse(saved) : { theme: 'Church Blue', previewColor: '#10b981', outputColor: '#ef4444', masterFrameRate: 'PAL 25p', outputSize: '1280x720', aspectRatio: 'Widescreen', performanceMode: false, gpuAcceleration: true, maxWordsPerSlide: 40 };
-    } catch { return { theme: 'Church Blue', previewColor: '#10b981', outputColor: '#ef4444', masterFrameRate: 'PAL 25p', outputSize: '1280x720', aspectRatio: 'Widescreen', performanceMode: false, gpuAcceleration: true, maxWordsPerSlide: 40 }; }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Force upgrade maxWordsPerSlide if it was set to a legacy low value (e.g., < 60)
+        if (!parsed.maxWordsPerSlide || parsed.maxWordsPerSlide < 60) {
+          parsed.maxWordsPerSlide = 1000;
+        }
+        return { ...defaultSettings, ...parsed };
+      }
+      return defaultSettings;
+    } catch { return defaultSettings; }
   });
 
   const [isLive, setIsLive] = useState(false);
