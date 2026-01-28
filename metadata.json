@@ -1,0 +1,9 @@
+{
+  "name": "HKM Studio v2",
+  "description": "Professional high-performance multi-streaming studio for churches. Featuring HKM Core Engine with GPU acceleration, Scripture NDI integration, and real-time graphics.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ]
+}
